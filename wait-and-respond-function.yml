@@ -1,0 +1,13 @@
+id: WaitAndRespondStateMachine
+name: wait-and-respond
+definition:
+  StartAt: Wait
+  States:
+    Wait:
+      Type: Wait
+      Seconds: 4
+      Next: Respond
+    Respond:
+      Type: Pass
+      Result: 42
+      End: true

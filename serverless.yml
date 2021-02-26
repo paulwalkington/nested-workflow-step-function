@@ -1,0 +1,44 @@
+service: step-functions-nested-workflows
+
+plugins:
+  - serverless-step-functions
+  - serverless-pseudo-parameters
+
+provider:
+  name: aws
+  runtime: nodejs10.x
+  iamRoleStatements:
+    - Effect: Allow
+      Action: states:SendTaskSuccess
+      Resource: '*'
+
+stepFunctions:
+  validate: true
+  stateMachines:
+    root:
+      id: RootStateMachine
+      name: nested-example-root
+      definition:
+        Comment: Demonstrate how the use nested workflows
+        StartAt: CallStepFunction
+        States:
+          CallStepFunction:
+            Type: Task
+            Resource: arn:aws:states:::states:startExecution.sync
+            Parameters:  
+              Input: 
+                Comment: "Hello world!"
+                AWS_STEP_FUNCTIONS_STARTED_BY_EXECUTION_ID.$: "$$.Execution.Id"
+              StateMachineArn: arn:aws:states:#{AWS::Region}:#{AWS::AccountId}:stateMachine:wait-and-respond
+            ResultPath: $.lastResponse
+            Next: Wait
+          Wait:
+            Type: Wait
+            Seconds: 1
+            Next: Respond
+          Respond:
+            Type: Pass
+            Result: 42
+            End: true
+    waitAndRespondStepFunction:
+      ${file(wait-and-respond-function.yml)}

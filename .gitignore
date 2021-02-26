@@ -1,0 +1,22 @@
+# package directories
+node_modules
+jspm_packages
+
+# Serverless/Typescript/IDE directories
+.serverless
+.build
+buckets
+.idea
+*.iml
+
+# VSCode settings
+.vscode
+*.code-workspace
+
+# macOS custom attributes
+**/.DS_Store
+
+# openapi-generator APIs
+main/generated/*
+
+.env
